@@ -38,6 +38,6 @@ class InterruptionHandler:
 
         if all(w in IGNORED_FILLERS for w in words):
             logger.info(f"Ignored: {text}")
-            self.session.clear_user_turn()
         else:
             logger.info(f"Valid: {text}")
+            self.session.interrupt()

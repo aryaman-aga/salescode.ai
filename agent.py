@@ -17,7 +17,7 @@ async def entrypoint(ctx: JobContext):
         stt=openai.STT(),
         llm=openai.LLM(),
         tts=openai.TTS(),
-        allow_interruptions=True,
+        allow_interruptions=False,
     )
 
     session = await agent.start(ctx.room)
