@@ -1,76 +1,53 @@
-LiveKit Voice Interruption Handling (SalesCode Challenge)
+# SalesCode.ai
 
-This repository contains a solution for intelligent voice interruption handling. It extends the standard LiveKit VoicePipelineAgent to distinguish between "filler words" (which are ignored) and "genuine interruptions" (which stop the agent).
+Smart voice interruption handler for LiveKit agents that distinguishes between filler words and genuine interruptions.
 
-What Changed
+## Features
 
-I implemented a custom extension layer SmartInterruptionHandler that sits on top of the LiveKit Agent.
+- **Filler Word Detection**: Ignores common fillers like "umm", "uh", "hmm" while the agent is speaking
+- **Smart Interruption**: Allows real commands like "stop" or "wait" to interrupt the agent
+- **Real-time Processing**: Uses STT transcription to intelligently filter interruptions
+- **Customizable**: Easy to add more filler words or adjust behavior
 
-Logic Added: instead of relying solely on VAD (Voice Activity Detection) for interruptions, I utilize the STT (Speech-to-Text) stream.
+## Setup
 
-New Modules: - interruption_handler.py: Contains the logic to filter transcription_received events.
-
-config.py: Centralized list of IGNORED_FILLERS and confidence thresholds.
-
-Workflow:
-
-Agent speaks.
-
-User makes a sound.
-
-interruption_handler captures the transcription.
-
-If the text matches the ignore list (e.g., "umm", "hmm"), the agent continues.
-
-If the text is valid (e.g., "wait", "stop"), agent.interrupt() is triggered manually.
-
-What Works
-
-Filler Suppression: The agent successfully ignores "uh", "umm", "hmm" while speaking.
-
-Valid Interruptions: Commands like "Stop" or "Wait" immediately halt the TTS.
-
-Silence Handling: If the agent is silent, "umm" is processed as normal user speech (as per requirements).
-
-Noise Filtering: Low-confidence transcriptions (background murmur) are ignored.
-
-Steps to Test
-
-Setup Environment:
-
+1. Install dependencies:
+```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+```
 
+2. Create `.env` file:
+```bash
+cp .env.example .env
+```
 
-Configure Keys:
-Create a .env file:
+3. Add your credentials to `.env`:
+```
+LIVEKIT_URL=your-livekit-url
+LIVEKIT_API_KEY=your-api-key
+LIVEKIT_API_SECRET=your-api-secret
+OPENAI_API_KEY=your-openai-key
+```
 
-LIVEKIT_URL=...
-LIVEKIT_API_KEY=...
-LIVEKIT_API_SECRET=...
-OPENAI_API_KEY=...
+## Usage
 
-
-Run the Agent:
-
+Run the agent:
+```bash
 python agent.py dev
+```
 
+## How It Works
 
-Verification:
+1. Agent starts speaking
+2. User input is transcribed via STT
+3. `InterruptionHandler` checks if input contains only filler words
+4. If fillers only: Agent continues speaking
+5. If valid speech: Agent stops and responds
 
-Connect to the playground/frontend.
+## Requirements
 
-Let the agent start its monologue.
-
-Say "Umm" or "Hmm" clearly. Expected: Agent continues talking.
-
-Say "Stop" or "Wait a second". Expected: Agent stops talking immediately.
-
-Environment Details
-
-Python: 3.10+
-
-SDK: livekit-agents>=0.8.0
-
-Plugins: OpenAI (STT/LLM/TTS), Silero (VAD)
+- Python 3.10+
+- LiveKit Agents SDK 1.3+
+- OpenAI API access
